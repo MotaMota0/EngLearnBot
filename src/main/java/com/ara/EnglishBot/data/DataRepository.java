@@ -14,6 +14,6 @@ import java.util.Optional;
 public interface DataRepository extends JpaRepository<Words,Long> {
 
 
-    @Query(value = "SELECT * FROM words WHERE text LIKE :word LIMIT 1", nativeQuery = true)
-    String findByWord(@Param("word") String s);
+   //@Query(value = "SELECT * FROM words WHERE text LIKE :word LIMIT 1", nativeQuery = true)
+    //String findByWord(@Param("word") String s);
 }
