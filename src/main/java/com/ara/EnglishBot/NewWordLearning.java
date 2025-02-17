@@ -1,6 +1,7 @@
 package com.ara.EnglishBot;
 
 import com.ara.EnglishBot.serivce.DataService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
@@ -22,12 +23,9 @@ public class NewWordLearning  extends TelegramLongPollingBot {
     @Value("${telegram.bot.token}")
     private  String token ;
 
+    @Autowired
+    private DataService dataService;
 
-    private final DataService dataService;
-
-    public NewWordLearning(DataService dataService) {
-        this.dataService = dataService;
-    }
 
     @Override
     public void onUpdateReceived(Update update) {
@@ -55,27 +53,8 @@ public class NewWordLearning  extends TelegramLongPollingBot {
                 e.printStackTrace();
             }
         }
-        if(update.hasCallbackQuery()){
-            CallbackQuery callbackQuery = update.getCallbackQuery();
-            String chatID = callbackQuery.getMessage().getChatId().toString();
 
-            if(callbackQuery.getData().equals("SWEETS")){
-                SendMessage sendMessage = new SendMessage();
-                sendMessage.setChatId(chatID);
-                String translate = dataService.findByWords("sweets");
-                if (translate != null && !translate.isEmpty()) {
-                    sendMessage.setText(translate);
-                } else {
-                    sendMessage.setText("Ошибка: пустое сообщение.");
-                }
 
-                try {
-                    execute(sendMessage);
-                } catch (TelegramApiException e) {
-                    throw new RuntimeException(e);
-                }
-            }
-        }
 
     }
 
@@ -83,7 +62,7 @@ public class NewWordLearning  extends TelegramLongPollingBot {
         if(userMessage.equalsIgnoreCase("/start")){
             return "Привет! Я бот для изучения английских слов для начинающих.";
         }  else if(userMessage.equalsIgnoreCase("/word")){
-            return getWords();
+            return dataService.getRandomWords();
         }
         else if(userMessage.equalsIgnoreCase("/help")){
             return """
@@ -118,7 +97,7 @@ public class NewWordLearning  extends TelegramLongPollingBot {
         super.onRegister();
     }
 
-    public String getWords(){
+    /*public String getWords(){
         String [][] words = {
                 {"apple", "яблоко"},
                 {"book", "книга"},
@@ -130,7 +109,7 @@ public class NewWordLearning  extends TelegramLongPollingBot {
         int rand = new Random().nextInt(words.length);
 
         return words[rand][0] + "  -  " +words[rand][1];
-    }
+    }*/
     /*public  SendMessage hermitageInlyneKeyboardAb(long chat_id){
         SendMessage message = new SendMessage();
         message.setChatId(String.valueOf(chat_id));
